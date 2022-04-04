@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang=en>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="interessant." property="og:title" />
+        <meta content="yet another link shortener." property="og:description" />
+        <meta content="#36393f" data-react-helmet="true" name="theme-color" />
+        <title>interessant. - invalid link</title>
+        <link href="./deps/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body{
+                background-color: white;   
+                color:#36393f;
+                font-smooth:always;
+                -webkit-font-smoothing:subpixel-antialiased;
+                font-smooth:always;
+            }
+            #header{
+                font-weight:400;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid justify-content-center text-center align-items-center" id="main-content" style="margin-top:14%">
+            <h1 id="header" style="font-size: 38pt" class="mt-5">:(</h1>
+            <h4 class="">It looks like you've entered an invalid link.</h4>
+            <h5 class="text-muted">Perhaps you made a typo?</h5>
+            <br>
+            <p>If you're certain you entered the link correctly, try creating a new one.</p>
+            <a class="link-dark" href="/">Click this link to go back home.</a>
+        </div>
+        <script>
+            document.body.style.opacity = "0";
+            window.onload = function(){
+                document.body.style.transition = "opacity 2s ease"
+                document.body.style.opacity = "1";
+            }
+        </script>
+    </body>
+</html>
