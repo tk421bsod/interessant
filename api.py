@@ -40,8 +40,10 @@ async def js(request):
 @routes.get('/shorten')
 async def shorten(request):
     print("Request recieved")
-    url = request.rel_url.query.get('url', '')
+    url = request.rel_url.query.get('url', '').strip()
     hash = await compute_hash()
+    if not url.startswith("http"):
+        url = "http://"+url
     try:
         dbapi.exec_safe_query("insert into links(url, hash) values(%s, %s)", (url, hash))
         links[hash] = url
@@ -50,9 +52,9 @@ async def shorten(request):
         return web.HTTPFound('/?hash=d')
     return web.HTTPFound(f'/?hash={hash}')
 
-def return_document(document, type):
-    html = open(document, "r")
-    return web.Response(text=html.read(), content_type=type)
+def return_document(name, type):
+    document = open(name, "r")
+    return web.Response(text=document.read(), content_type=type)
 
 @routes.get('/deps/bootstrap.min.css')
 async def css(request):
@@ -66,12 +68,23 @@ async def check_link(request):
     hash = request.path.replace('/', '')
     print(hash)
     try:
-        #checksum
+        #checksum to avoid hitting cache
         if int(hash[-1]) - int(hash[0]) != 1:
             raise ValueError
-        return web.HTTPFound(links[request.path.replace('/', '')])
-    except (KeyError, ValueError):
+        print(links[hash])
+        return web.HTTPFound(links[hash])
+    except KeyError:
+        ret = dbapi.exec_safe_query("select url from links where hash=%s", (hash))
+        if ret:
+            #have to nest to prevent keyerrors
+            if ret['url']:
+                return web.HTTPFound(ret['url'])
         return return_document('invalid.html', 'text/html')
+    except ValueError:
+        return return_document('invalid.html', 'text/html')
+
+async def handle_errors(request):
+    return return_document('error.html', 'text/html')
 
 def create_error_middleware(overrides):
 
@@ -83,7 +96,6 @@ def create_error_middleware(overrides):
             override = overrides.get(ex.status)
             if override:
                 return await override(request)
-
             raise
         except Exception:
             request.protocol.logger.exception("Error handling request")
@@ -93,13 +105,11 @@ def create_error_middleware(overrides):
 
 
 def setup_middlewares(app):
-    error_middleware = create_error_middleware({
-        404: check_link,
-    })
+    error_middleware = create_error_middleware({404 : check_link, 500 : handle_errors})
     app.middlewares.append(error_middleware)
 
 app = web.Application()
 app.add_routes(routes)
 setup_middlewares(app)
 fill_cache()
-web.run_app(app, port=80)
+web.run_app(app, port=80, access_log=None)
