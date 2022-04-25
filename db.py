@@ -14,7 +14,7 @@ class db:
     Methods
     -------
 
-    ensure_tables() - Ensures that all required tables exist. Called by main.run().
+    ensure_tables() - Ensures that all required tables exist.
     exec_safe_query(query, params, *,  fetchall) - Executes 'query' with 'params'. Uses pymysql's parameterized queries. 'params' can be empty.
     exec_query(query, *, fetchall) - Executes 'query'. DEPRECATED due to the potential for SQL injection. Will show a warning if used.
     """
@@ -23,28 +23,19 @@ class db:
         """
         Parameters
         ----------
-        bot : discord.ext.commands.Bot, optional
-            A discord.ext.commands.Bot instance. This parameter may be removed in the future.
         password : str, optional
-            The database password in plain text. TODO: why is this optional
+            The database password in plain text.
         ip : str, optional
-            The IP address to use for the database. Defaults to 'localhost'. Optional if `bot` has a `dbip` attribute.
+            The IP address to use for the database.
         database : str, optional
-            The name of the database to connect to. Optional if `bot` has a `database` attribute. 
+            The name of the database to connect to.
         """
-        try:
-            with open("dbp.txt", "r") as dbpfile:
-                print("It looks like you still have some files left over from the configuration data format change. Run `bash setup.sh delete-old` to get rid of them.")
-        except FileNotFoundError:
-            pass
         self.databasepassword = password
         if not ip:
             ip = "localhost"
         self.ip = ip
         self.database = database
         self.logger = logging.getLogger(name=f'db')
-        self.TABLES = {'mute_roles':'guild_id bigint, role_id bigint', 'reminders':'user_id bigint, channel_id bigint, reminder_time datetime, now datetime, reminder_text text, uuid text', 'prefixes':'guild_id bigint, prefix text', 'responses':'guild_id bigint, response_trigger text, response_text text, constraint pk_responses primary key (guild_id, response_trigger)', 'config':'guild_id bigint, setting text, enabled tinyint, constraint pk_config primary key (guild_id, setting)', 'blocked':'user_id bigint', 'roles':'guild_id bigint, role_id bigint, message_id bigint, emoji text', 'songs':'name text, id text, duration varchar(8), thumbnail text', 'todo':'user_id bigint, entry text, timestamp datetime', 'active_requests':'id bigint', 'chainstats':'user_id bigint, breaks tinyint unsigned, starts tinyint unsigned, constraint users primary key (user_id)'}
-        self.failed = False
         #try to open a connection to the database
         self.conn = self.attempt_connection()
         self.logger.info("Connected to database.")
@@ -64,23 +55,6 @@ class db:
                     raise
         return requires_connection_inner
 
-    @requires_connection
-    def ensure_tables(self):
-        self.logger.info("Making sure all required tables exist...")
-        for table, schema in self.TABLES.items():
-            try:
-                self.conn.execute(f'select * from {table}')
-            except pymysql.err.ProgrammingError:
-                self.logger.warning(f'Table {self.database}.{table} doesn\'t exist. Creating it...')
-                self.logger.debug(f"Schema for this table is {schema}")
-                self.dbc.execute(f'create table {table}({schema})')
-                if not self.failed:
-                    self.failed = True
-        if not self.failed:
-            self.logger.info('All required tables exist.')
-        else:
-            self.logger.info('Done creating tables.')
-
     def attempt_connection(self):
         self.logger.info(f"Attempting to connect to database '{self.database}' on '{self.ip}'...")
         return self.connect()
@@ -90,7 +64,7 @@ class db:
 
     def connect(self):
         conn = pymysql.connect(host=self.ip,
-                    user="maximilianbot",
+                    user="interessantapp",
                     password=self.databasepassword,
                     db=self.database,
                     charset='utf8mb4',
