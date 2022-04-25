@@ -8,9 +8,10 @@ import random
 import traceback
 
 logging.basicConfig(level=logging.INFO)
-dbapi = db.db(password="19Integra98", ip="localhost", database="interessant")
+dbapi = db.db(password="", ip="localhost", database="interessant")
 routes = web.RouteTableDef()
 links = {}
+hashes = {}
 
 def fill_cache():
     data = dbapi.exec_safe_query("select * from links", (), fetchall=True)
@@ -22,6 +23,8 @@ def fill_cache():
     for link in data:
         links[link['hash']] = link['url']
     print(links)
+    hashes = {v: k for k, v in links.items()}
+    print(hashes)
 
 async def compute_hash():
     a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
@@ -41,12 +44,17 @@ async def js(request):
 async def shorten(request):
     print("Request recieved")
     url = request.rel_url.query.get('url', '').strip()
-    hash = await compute_hash()
+    print(url)
+    print(list(links.keys()))
     if not url.startswith("http"):
         url = "http://"+url
+    if url in list(links.values()):
+        return web.HTTPFound(f'/?hash={hashes[url]}')
+    hash = await compute_hash()
     try:
         dbapi.exec_safe_query("insert into links(url, hash) values(%s, %s)", (url, hash))
         links[hash] = url
+        hashes[url] = hash
     except pymysql.err.IntegrityError:
         traceback.print_exc()
         return web.HTTPFound('/?hash=d')
@@ -66,6 +74,8 @@ async def main(request):
 
 async def check_link(request):
     hash = request.path.replace('/', '')
+    if hash in ['index.html', 'invalid.html', 'error.html']:
+        return return_document(hash, 'text/html')
     print(hash)
     try:
         #checksum to avoid hitting cache
@@ -87,7 +97,6 @@ async def handle_errors(request):
     return return_document('error.html', 'text/html')
 
 def create_error_middleware(overrides):
-
     @web.middleware
     async def error_middleware(request, handler):
         try:
