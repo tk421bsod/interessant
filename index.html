@@ -25,18 +25,30 @@
             <h1 id="header" class="mt-5">intéressant.</h1>
             <h5 class="text-muted">yet another link shortener.</h5>
             <br>
-            <form method="get" action="./shorten">
+            <form method="get" action="./shorten" id="main-form">
                 <div>
-                    <label class="form-label">Enter a link:</label>
-                    <input type="text" name="url" style="width:20vw" class="form-control mx-auto">
+                    <label class="form-label">enter a link:</label>
+                    <input type="text" id="link-field" name="url" style="width:20vw" class="form-control mx-auto mb-1">
+                    <p class="mb-0" id="empty"></p>
                 </div>
-                <button type="submit" class="btn btn-outline-dark mt-2">Shorten</button>
             </form>
+            <button onclick="checkAndSubmit()" class="btn btn-outline-dark mt-2">shorten</button>
             <p class="mt-3 mb-1" id="saved"></p>
-            <p id="copy" class="mt-0"></p>
+            <p id="copy" class="mt-0 mb-0"></p>
         </div>
+        <footer class="footer text-center" style="bottom:0; position:absolute; right:0; left:0;">Made with ♥️ by tk421</footer>
 
         <script>
+            function checkAndSubmit(){
+                if (document.getElementById("link-field").value.trim() == ""){
+                    document.getElementById("empty").className="text-danger"
+                    document.getElementById("empty").innerHTML="enter a link before clicking \"shorten\"."
+                } else {
+                    document.getElementById("empty").innerHTML = ""
+                    document.getElementById("main-form").submit()
+                }
+            }
+
             function getUrlVars() {
                 var vars = {};
                 var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -57,18 +69,22 @@
             hash = getUrlParam('hash', '');
             if (hash){
                 if (hash == 'e' || hash == 'd'){
-                    document.getElementById('saved').innerHTML = "Hmm, something went wrong while shortening that link. Try again later.";
+                    document.getElementById('saved').innerHTML = "hmm, something went wrong while shortening that link. try again later.";
                 }
-                document.getElementById('saved').innerHTML = "New link: <input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" style=\"width:17vw; text-align:center\" value=\"" + window.location.href.split('?')[0] + hash + "\">";
-                document.getElementById('copy').innerHTML = "Click above to copy"
+                document.getElementById('saved').innerHTML = "new link: <input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" style=\"width:17vw; text-align:center\" value=\"" + window.location.href.split('?')[0] + hash + "\">";
+                document.getElementById('copy').innerHTML = "click above to copy"
             }
         }
 
         function click_to_copy(){
             text = document.getElementById('newlink')
             navigator.clipboard.writeText(text.value);
-            document.getElementById('copy').className = "mt-0 text-success"
-            document.getElementById('copy').innerHTML = "Copied to clipboard!"
+            text.style.transition = "border 1s ease";
+            text.style.border = "2px dashed limegreen";
+            document.getElementById('copy').className = "mt-0 text-success";
+            document.getElementById('copy').innerHTML = "copied link to clipboard!";
+            text.blur();
+            document.getElementById('copy').focus();
         }
 
         window.addEventListener("DOMContentLoaded", init)
