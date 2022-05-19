@@ -1,3 +1,4 @@
+print("Loading libraries...")
 from aiohttp import web
 import datetime
 import pymysql
@@ -6,14 +7,22 @@ import db
 import logging
 import random
 import traceback
+import sys
 
 logging.basicConfig(level=logging.INFO)
-dbapi = db.db(password="", ip="localhost", database="interessant")
+try:
+    dbapi = db.db(password="", ip="localhost", database="interessant")
+except:
+    if not "--allownodb" in sys.argv:
+        print("Failed to set up database. Pass '--allownodb' to continue without a database connection.")
+        os._exit(12)
+    print("'--allownodb' passed, continuing without a database connection. Most stuff won't work.")
 routes = web.RouteTableDef()
 links = {}
 hashes = {}
 
 def fill_cache():
+    global hashes
     data = dbapi.exec_safe_query("select * from links", (), fetchall=True)
     if isinstance(data, dict):
         data = [data]
@@ -22,9 +31,7 @@ def fill_cache():
         return
     for link in data:
         links[link['hash']] = link['url']
-    print(links)
     hashes = {v: k for k, v in links.items()}
-    print(hashes)
 
 async def compute_hash():
     a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
@@ -42,14 +49,19 @@ async def js(request):
 
 @routes.get('/shorten')
 async def shorten(request):
+    global hashes
     print("Request recieved")
     url = request.rel_url.query.get('url', '').strip()
     print(url)
     print(list(links.keys()))
+    print(hashes)
     if not url.startswith("http"):
         url = "http://"+url
-    if url in list(links.values()):
-        return web.HTTPFound(f'/?hash={hashes[url]}')
+    try:
+        if url in list(links.values()):
+            return web.HTTPFound(f'/?hash={hashes[url]}')
+    except KeyError:
+        print("keyerror - see output above")
     hash = await compute_hash()
     try:
         dbapi.exec_safe_query("insert into links(url, hash) values(%s, %s)", (url, hash))
@@ -120,5 +132,6 @@ def setup_middlewares(app):
 app = web.Application()
 app.add_routes(routes)
 setup_middlewares(app)
-fill_cache()
+if not "--allownodb" in sys.argv:
+    fill_cache()
 web.run_app(app, port=80, access_log=None)
