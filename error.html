@@ -6,7 +6,7 @@
         <meta content="interessant." property="og:title" />
         <meta content="yet another link shortener." property="og:description" />
         <meta content="#36393f" data-react-helmet="true" name="theme-color" />
-        <title>interessant. - internal error</title>
+        <title>interessant - internal error.</title>
         <link href="./deps/bootstrap.min.css" rel="stylesheet">
         <style>
             body{
@@ -22,22 +22,23 @@
     </head>
     <body>
         <div class="container-fluid justify-content-center text-center align-items-center" id="main-content" style="margin-top:20%">
-            <div id="overlap" style="transition: opacity 2s ease, transform 2s ease; transform: translateY(-0.1vh); opacity:0; z-index: 1000; background-color:transparent; position:absolute; left:0; right:0;">
+            <div id="overlap" style="transition: opacity 1s ease, transform 2s cubic-bezier(0.83, 0, 0.17, 1); transform: translateY(-0.1vh); opacity:1; z-index: 1000; background-color:transparent; position:absolute; left:0; right:0;">
                 <h1 id="error-header" style="font-size: 40pt;" class="mx-auto">:(</h1>
             </div>
-            <div id="main-wrapper" style="transform: translateY(1vh); transition: opacity 2s ease, transform 2s ease-out; opacity:0">
-                <h4 class="">Something went wrong.</h4>
-                <h5 class="text-muted">Try again in a few minutes.</h5>
+            <div id="main-wrapper" style="transform: translateY(1vh); transition: opacity 2s 0.5s ease, transform 2s cubic-bezier(0.83, 0, 0.17, 1); opacity:0">
+                <h4 class="">something went wrong.</h4>
+                <h5 class="text-muted">try again in a few minutes.</h5>
                 <br>
-                <a class="link-dark" href="/">Click this link to go back home.</a>
+                <a class="link-dark" href="/">click this link to go back home.</a>
             </div>
         </div>
         <script>
             overlap = document.getElementById("overlap");
             main = document.getElementById("main-wrapper");
+            overlap.style.opacity = "0"
             overlap.style.height = String(main.offsetHeight) + "px"
             window.onload = function(){
-                setTimeout(function(){overlap.style.transform="translateY(-7vh)"; main.style.transform="translateY(4vh)"; setTimeout(function(){overlap.style.opacity="1";main.style.opacity="1";}, 500)}, 500)
+                setTimeout(function(){overlap.style.opacity="1"; overlap.style.transform="translateY(-8vh)"; main.style.transform="translateY(3vh)"; setTimeout(function(){main.style.opacity="1";}, 500)}, 1000)
             }
         </script>
     </body>
