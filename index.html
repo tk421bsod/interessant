@@ -7,7 +7,14 @@
         <meta content="yet another link shortener." property="og:description" />
         <meta content="#36393f" data-react-helmet="true" name="theme-color" />
         <title>intéressant.</title>
+        <p id="loading"></p>
+        <script>document.getElementById('loading').innerHTML = "Loading..."; document.body.style.backgroundColor = "#36393f"; document.body.style.color = "white"</script>
         <link href="./deps/bootstrap.min.css" rel="stylesheet">
+        <script src="./deps/bootstrap.bundle.min.js"></script>
+        <script async src="./deps/theming.js"></script>
+        <script async src="./deps/fa/solid.js"></script>
+        <script async src="./deps/fa/regular.js"></script>
+        <script defer src="./deps/fa/fontawesome.js"></script>
         <style>
             body{
                 background-color: white;   
@@ -15,8 +22,41 @@
                 font-smooth:always;
                 -webkit-font-smoothing:subpixel-antialiased;
             }
+
             #header{
                 font-weight:400;
+            }
+  
+            #link-field{
+                 text-align:center
+            }
+
+            li{
+                color:#36393f;
+                text-align:center;
+                list-style-position:inside;
+            }
+
+            .fixed-center{
+                position: fixed;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                z-index: 3;
+            }
+
+           .display-above{
+                z-index: 1030 !important;
+            }
+
+            #newlink{
+                width:17vw; 
+                text-align:center; 
+                box-shadow: none; 
+                transition: box-shadow 0.1s ease;
+            }
+            #newlink:hover{
+                box-shadow: 0px 0px 7px 0px #B0B2B2;
             }
         </style>
     </head>
@@ -25,19 +65,38 @@
             <h1 id="header" class="mt-5">intéressant.</h1>
             <h5 class="text-muted">yet another link shortener.</h5>
             <br>
-            <form method="get" action="./shorten" id="main-form">
+            <form method="get" action="./shorten" id="main-form" onsubmit="return checkAndSubmit()">
                 <div>
                     <label class="form-label">enter a link:</label>
                     <input type="text" id="link-field" name="url" style="width:20vw" class="form-control mx-auto mb-1">
                     <p class="mb-0" id="empty"></p>
-                </div>
-            </form>
-            <button onclick="checkAndSubmit()" class="btn btn-outline-dark mt-2">shorten</button>
+                    <input type="submit" class="btn btn-outline-dark mt-2" value="shorten">
+                 </div>
+           </form>
             <p class="mt-3 mb-1" id="saved"></p>
             <p id="copy" class="mt-0 mb-0"></p>
+            <noscript><p class="mt-2">hi, it looks like javascript is disabled.</p><p>you'll need to enable it for most of this website to work.</p><p>wondering what this site does if you enable js?</p><ul><li>changes color to match system theme (uses one cookie to make it persist across sessions)</li><li>automatically resizes input fields</li><li>shows shortened link here</li><li>allows you to click an input field to copy the link</li></ul></noscript>
+     <div class="toast align-items-center fixed-center mx-auto display-above" role="alert" aria-live="assertive" aria-atomic="true" id="theme-notif" data-bs-autohide="false" style="color:black; width: 430px; transition: width 0.5s ease-out, padding 1s ease-in-out, margin 1.75s ease-out, opacity .3s linear;">
+         <div class="d-flex" id="theme-notif-main" style="">
+             <div class="toast-body" id="theme-set" style="">
+                  <div class="toast-subsection text-muted" style="font-size:8pt">
+                     use the button at the bottom to change the theme later.
+                 </div>
+             </div>
+             <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" style="padding-right: 0; transition: opacity 0.5s ease, transform 0.5s ease; transform: scale(0.01, 0.01); left: 420px; top:35%; position:absolute;" id="theme-notif-close"></button>
+         </div>
+     </div>
+     <div class="toast align-items-center fixed-center mx-auto display-above" role="alert" aria-live="assertive" aria-atomic="true" id="toggle-notif" data-bs-autohide="false" style="color:black; width: 179px; transition: width 0.5s ease-out, padding 1s ease-in-out, margin 0.8s ease-out, opacity .3s linear;">
+         <div class="d-flex" id="toggle-notif-main" style="">
+             <div class="toast-body" id="toggle-set" style="">
+             </div>
+         </div>
+     </div>
+    </div>
+        <div class="fixed-center text-center">
+            <button class="btn btn-outline-light" id="theme-button"><p id="theme-toggle" class="mx-auto"></p></button>
+            <footer class="footer text-center" style="">made with ♥️ by tk421</footer>
         </div>
-        <footer class="footer text-center" style="bottom:0; position:absolute; right:0; left:0;">Made with ♥️ by tk421</footer>
-
         <script>
             function checkAndSubmit(){
                 if (document.getElementById("link-field").value.trim() == ""){
@@ -65,24 +124,49 @@
                 return urlparameter;
             }
 
+        function adjustWidth(elem, multiplier){
+            let newwidth = document.getElementById(elem).value.length*multiplier;
+            console.log("attempting to fit " + elem + " to text size (new width is " + String(newwidth) + ")")
+            if (newwidth > (window.innerWidth**0.95) && window.innerWidth > 768) {
+                console.log("not changing width as it exceeds vw**0.95 (" + String(window.innerWidth**0.95) + ")")
+                return
+            }
+            if ((newwidth < ((window.innerWidth/100)*19.1) && window.innerWidth > 768) || (window.innerWidth < 768 && newwidth < (window.innerWidth/100)*17.45)) {
+                document.getElementById(elem).style.width = "20vw"
+            } else if (newwidth < window.innerWidth){
+                document.getElementById(elem).style.width = String(newwidth) + "px"
+            }
+        }
+
+        function adjustInputWidth(){
+            adjustWidth('link-field', 9.4)
+        }
+
         function init(){
             hash = getUrlParam('hash', '');
+            addEventListener('input', adjustInputWidth);
             if (hash){
                 if (hash == 'e' || hash == 'd'){
                     document.getElementById('saved').innerHTML = "hmm, something went wrong while shortening that link. try again later.";
                 }
-                document.getElementById('saved').innerHTML = "new link: <input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" style=\"width:17vw; text-align:center\" value=\"" + window.location.href.split('?')[0] + hash + "\">";
-                document.getElementById('copy').innerHTML = "click above to copy"
+                document.getElementById('saved').innerHTML = "new link: <input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + window.location.href.split('?')[0] + hash + "\">";
+                //automatically adjust width to match length of link
+                adjustWidth('newlink', 7.7)
+                if (window.innerWidth < 768){
+                    document.getElementById('copy').innerHTML = "<i class=\"far fa-copy fa-xs\"></i> tap above to copy"
+                } else {
+                    document.getElementById('copy').innerHTML = "<i class=\"far fa-copy fa-xs\"></i> click above to copy"
+                }
             }
         }
 
         function click_to_copy(){
             text = document.getElementById('newlink')
             navigator.clipboard.writeText(text.value);
-            text.style.transition = "border 1s ease";
+            text.style.transition = "border 1s ease, box-shadow 1s ease";
             text.style.border = "2px dashed limegreen";
             document.getElementById('copy').className = "mt-0 text-success";
-            document.getElementById('copy').innerHTML = "copied link to clipboard!";
+            document.getElementById('copy').innerHTML = "<i class=\"far fa-paste fa-xs\"></i> copied link to clipboard!";
             text.blur();
             document.getElementById('copy').focus();
         }
