@@ -8,6 +8,7 @@ import logging
 import random
 import traceback
 import sys
+from aiohttp_compress import compress_middleware
 
 logging.basicConfig(level=logging.INFO)
 try:
@@ -133,6 +134,7 @@ def setup_middlewares(app):
 
 app = web.Application()
 app.add_routes(routes)
+app.middlewares.append(compress_middleware)
 setup_middlewares(app)
 if not "--allownodb" in sys.argv:
     fill_cache()
