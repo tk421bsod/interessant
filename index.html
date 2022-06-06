@@ -65,7 +65,7 @@
             <h1 id="header" class="mt-5">intéressant.</h1>
             <h5 class="text-muted">yet another link shortener.</h5>
             <br>
-            <form method="get" action="./shorten" id="main-form" onsubmit="return checkAndSubmit()">
+            <form method="get" action="./shorten" id="main-form" onsubmit="event.preventDefault(); return checkAndSubmit()">
                 <div>
                     <label class="form-label">enter a link:</label>
                     <input type="text" id="link-field" name="url" style="width:20vw" class="form-control mx-auto mb-1">
