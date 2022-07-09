@@ -70,7 +70,7 @@ function applyLightStyling(){
 function applyDarkStyling(){
     console.log("switching to dark theme")
     document.cookie = "theme=dark"
-    document.body.style.color = "white"; document.body.style.backgroundColor = "#36393f"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-dark', 'btn-outline-light')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-dark', 'link-light')}; for (const each of document.getElementsByTagName('li')){if (each.className.includes("nav")){continue}; each.style.backgroundColor="#36393f"; each.style.color="white";}; for (const each of document.getElementsByTagName('ul')){if (each.className.includes("nav")){continue};each.style.backgroundColor="#36393f"; each.style.color="white";}; if (document.getElementsByClassName("commit-link")){for (const link of document.getElementsByClassName("commit-link")){link.style.color = "white"}}for (const elem of document.getElementsByTagName("input")){elem.style.backgroundColor = "#36393f"; elem.style.color = "white";} for (const elem of document.getElementsByClassName("toast")){elem.style.color = "white"; elem.style.backgroundColor = "#36393f";} for (const elem of document.getElementsByClassName('btn-close')){if (! elem.className.includes("btn-close-white")){elem.className += " btn-close-white"}}
+    document.body.style.color = "white"; document.body.style.backgroundColor = "#36393f"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-dark', 'btn-outline-light')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-dark', 'link-light')}; for (const each of document.getElementsByTagName('li')){if (each.className.includes("nav")){continue}; each.style.backgroundColor="#36393f"; each.style.color="white";}; for (const each of document.getElementsByTagName('ul')){if (each.className.includes("nav")){continue};each.style.backgroundColor="#36393f"; each.style.color="white";}; if (document.getElementsByClassName("commit-link")){for (const link of document.getElementsByClassName("commit-link")){link.style.color = "white"}}for (const elem of document.getElementsByTagName("input")){elem.style.backgroundColor = "#36393f"; elem.style.color = "white";} for (const elem of document.getElementsByClassName("toast")){elem.style.color = "white"; elem.style.backgroundColor = "#36393f";} for (const elem of document.getElementsByClassName('btn-close')){if (! elem.className.includes("btn-close-white")){elem.className += " btn-close-white"}} for (const each of document.getElementsByClassName('modal')){each.style.color = "white"} for (const each of document.getElementsByClassName('modal-content')){each.style.backgroundColor="#36393f"}
 }
 
 function addCloseButton(name){
@@ -135,6 +135,7 @@ function releaseNotif(name){
 
 function showNotif(name, closable, delay){
     console.log("Showing notif '" + name + "'")
+    held = false
     if (! delay){
         notifEndAnimDelay = 5400;
     } else {
@@ -188,7 +189,8 @@ function showThemeNotif(theme){
     showNotif('theme-notif', true);
 }
 
-function initTheming(){
+function initTheming(show){
+    document.getElementById('theme-button').addEventListener("click", toggleTheme);
     let loading = document.getElementById("loading")
     if (loading){
         loading.remove()
@@ -208,10 +210,12 @@ function initTheming(){
         } catch (error){
             applyDarkStyling();
             document.body.style.opacity = "1";
-            showThemeNotif("dark")
+            if (show){
+                showThemeNotif("dark")
+            }
         }
         themeToggle.innerHTML = "<i class=\"fas fa-sun fa-xs\"></i>";
-        themeToggle.title = "Switch to light theme";
+        themeToggle.title = "switch to light theme.";
         themeToggle.style.marginBottom = "0";
     } else {
         try {
@@ -222,10 +226,12 @@ function initTheming(){
         } catch (error){
             applyLightStyling();
             document.body.style.opacity = "1";
-            showThemeNotif("light");
+            if (show){
+                showThemeNotif("light");
+            }
         }
         themeToggle.innerHTML = "<i class=\"fas fa-moon fa-xs\"></i>";
-        themeToggle.title = "Switch to dark theme";
+        themeToggle.title = "switch to dark theme.";
         themeToggle.style.marginBottom = "0";
     }
     if (typeof toggle !== 'undefined'){
@@ -244,6 +250,9 @@ function initTheming(){
         for (const each of document.getElementsByTagName("input")){
             each.style.transition = "background-color 0.6s ease-in-out, color 0.6s ease-in-out";
         }
+        for (const each of document.getElementsByClassName("modal")){
+            each.style.transition = "background-color 0.6s ease-in-out, color 0.6s ease-in-out";
+        }
     }
 }
 
@@ -254,8 +263,4 @@ if(window.location.href.includes('#main-content')){
 }
 
 window.addEventListener("DOMContentLoaded", function(){console.log("changing opacity`");document.body.style.opacity = 0})
-window.onload = function(){
-    initTheming()
-    document.getElementById('theme-button').addEventListener("click", toggleTheme);
-}
  

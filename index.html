@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-    <head>
+    <head id="head">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="intéressant." property="og:title" />
@@ -11,10 +11,10 @@
         <script>document.getElementById('loading').innerHTML = "Loading..."; document.body.style.backgroundColor = "#36393f"; document.body.style.color = "white"</script>
         <link href="./deps/bootstrap.min.css" rel="stylesheet">
         <script src="./deps/bootstrap.bundle.min.js"></script>
-        <script async src="./deps/theming.js"></script>
-        <script async src="./deps/fa/solid.js"></script>
-        <script async src="./deps/fa/regular.js"></script>
-        <script defer src="./deps/fa/fontawesome.min.js"></script>
+        <script src="./deps/theming.js"></script>
+        <script src="./deps/fa/solid.js"></script>
+        <script src="./deps/fa/regular.js"></script>
+        <script src="./deps/fa/fontawesome.min.js"></script>
         <style>
             body{
                 background-color: white;   
@@ -93,11 +93,34 @@
          </div>
      </div>
     </div>
+    <div class="modal fade" id="cookieModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" style="transition:transform 0.75s ease-out, opacity 0.5s ease-out">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enable cookies?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>This site uses cookies for two functions.<br>1. Remembering the previously used theme. <br>2. Remembering that you accepted cookies.<br><b>That's it.</b><br>This site <b>does not</b> use any cookies for analytics or tracking. <br>If you block cookies, you'll see this message every time you visit.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Accept cookies</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Block cookies</button>
+                </div>
+            </div>
+        </div>
+    </div>
         <div class="fixed-center text-center">
             <button class="btn btn-outline-light" id="theme-button"><p id="theme-toggle" class="mx-auto"></p></button>
             <footer class="footer text-center" style="">made with ♥️ by tk421</footer>
         </div>
         <script>
+            cookies = {}            
+
+            function getCookies(){
+                document.cookie.split(";").forEach(function(cookie){let intermediate=cookie.split("=");cookies[intermediate[0]]=intermediate[1];});
+            }
+
             function checkAndSubmit(){
                 if (document.getElementById("link-field").value.trim() == ""){
                     document.getElementById("empty").className="text-danger"
@@ -142,7 +165,7 @@
             adjustWidth('link-field', 9.4)
         }
 
-        function init(){
+        function initSecondary(){
             hash = getUrlParam('hash', '');
             addEventListener('input', adjustInputWidth);
             if (hash){
@@ -160,6 +183,24 @@
             }
         }
 
+        function init(){
+            getCookies();
+            var cookieModalElem = document.getElementById('cookieModal')
+            var cookieModal = new bootstrap.Modal(cookieModalElem)
+            if (! cookies['accepted']){
+                initTheming(false);
+                cookieModalElem.addEventListener('hidden.bs.modal', function (event) {
+                    return setTimeout(function(){initTheming(true)}, 100)
+                })
+                cookieModalElem.addEventListener('shown.bs.modal', function (event) {
+                    return setTimeout(initSecondary, 1000) //finish init in a moment...
+                })
+                cookieModal.show()
+                return
+            }
+            if (getUrlParam('hash', '')){redirect=true}else{redirect=false};initTheming(!redirect)
+        }
+
         function click_to_copy(){
             text = document.getElementById('newlink')
             navigator.clipboard.writeText(text.value);
@@ -172,6 +213,7 @@
         }
 
         window.addEventListener("DOMContentLoaded", init)
+
         </script>
     </body>
 </html>

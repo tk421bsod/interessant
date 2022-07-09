@@ -8,8 +8,6 @@ import logging
 import random
 import traceback
 import sys
-from aiohttp_compress import compress_middleware
-
 logging.basicConfig(level=logging.INFO)
 try:
     dbapi = db.db(password="", ip="localhost", database="interessant")
@@ -134,7 +132,12 @@ def setup_middlewares(app):
 
 app = web.Application()
 app.add_routes(routes)
-app.middlewares.append(compress_middleware)
+
+try:
+    from aiohttp_compress import compress_middleware
+    app.middlewares.append(compress_middleware)
+except ImportError:
+    print("aiohttp-compress isn't installed. Compression disabled.")
 setup_middlewares(app)
 if not "--allownodb" in sys.argv:
     fill_cache()
