@@ -93,19 +93,18 @@
          </div>
      </div>
     </div>
-    <div class="modal fade" id="cookieModal" tabindex="-1">
+    <div class="modal fade" id="cookieModal" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered" style="transition:transform 0.75s ease-out, opacity 0.5s ease-out">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Enable cookies?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>This site uses cookies for two functions.<br>1. Remembering the previously used theme. <br>2. Remembering that you accepted cookies.<br><b>That's it.</b><br>This site <b>does not</b> use any cookies for analytics or tracking. <br>If you block cookies, you'll see this message every time you visit.</p>
+                    <p>This website uses <a class="link-light" href="#">cookies</a> for two functions.<br>1. Remembering the previously used theme. <br>2. Remembering that you accepted cookies.<br><b>That's it.</b><br>This site <b>does not</b> use cookies for any other purpose.<br>If you disable cookies, you'll see this message every time you visit.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Accept cookies</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Block cookies</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="enableCookies()">Enable cookies</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disableCookies()">Disable cookies</button>
                 </div>
             </div>
         </div>
@@ -115,10 +114,10 @@
             <footer class="footer text-center" style="">made with ♥️ by tk421</footer>
         </div>
         <script>
-            cookies = {}            
+            cookies = {}
 
             function getCookies(){
-                document.cookie.split(";").forEach(function(cookie){let intermediate=cookie.split("=");cookies[intermediate[0]]=intermediate[1];});
+                document.cookie.split(";").forEach(function(cookie){let stripped=cookie.replace(" ", "");let intermediate=stripped.split("=");cookies[intermediate[0]]=intermediate[1];});
             }
 
             function checkAndSubmit(){
@@ -183,22 +182,37 @@
             }
         }
 
+        function isRedirect(){
+            if (getUrlParam('hash', '')){
+                return true
+            } 
+            return false
+        }
+
+        function enableCookies(){
+            document.cookie = "accepted=yes"
+            initTheming(!(isRedirect()))
+        }
+ 
+        function disableCookies(){
+            initTheming(!(isRedirect()))
+        }
+
         function init(){
+            var redirect = isRedirect()
             getCookies();
             var cookieModalElem = document.getElementById('cookieModal')
             var cookieModal = new bootstrap.Modal(cookieModalElem)
-            if (! cookies['accepted']){
-                initTheming(false);
-                cookieModalElem.addEventListener('hidden.bs.modal', function (event) {
-                    return setTimeout(function(){initTheming(true)}, 100)
-                })
+            if (! cookies['accepted'] && ! isRedirect()){
+                initTheming(false); //defer themeNotif until modal is hidden
                 cookieModalElem.addEventListener('shown.bs.modal', function (event) {
-                    return setTimeout(initSecondary, 1000) //finish init in a moment...
+                    return setTimeout(initSecondary, 500) //finish init in a moment...
                 })
                 cookieModal.show()
                 return
             }
-            if (getUrlParam('hash', '')){redirect=true}else{redirect=false};initTheming(!redirect)
+            initSecondary()
+            initTheming(!redirect)
         }
 
         function click_to_copy(){

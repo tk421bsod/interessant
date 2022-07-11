@@ -17,18 +17,25 @@ function setValueIfNotExists(object, key, value){
 }
 
 function showToggleNotif(){
+    getCookies();
     if (duplicateToggleNotifCount >= 3){
         console.log("Toggle notif limit exceeded!")
         return
     }
     //create local variable with current value of themes['toggle'] as it can change when spamming toggle
     let currentTheme = themes[toggle]
+    //add "this will persist across sessions" if cookies are enabled
+    if (cookies['accepted']){
+        var crossSessionPersistence = "<div class=\"toast-subsection text-muted\" style=\"font-size:7.8pt\">this will persist across sessions.</div>"
+    } else {
+        var crossSessionPersistence = ""
+    }
     if (activeNotifs['toggle-notif']){
         duplicateToggleNotifCount += 1
-        console.log("attempted to show duplicate toggle notif!! " + String(duplicateToggleNotifCount) + " waiting to be shown")
-        setTimeout(function(){showNotif('toggle-notif', false, 2300); document.getElementById('toggle-set').innerHTML = "switched to <b>" + currentTheme + " theme</b>. <div class=\"toast-subsection text-muted\" style=\"font-size:7.8pt\">this will persist across sessions.</div>"; duplicateToggleNotifCount -= 1;}, (3100*duplicateToggleNotifCount)+(100*duplicateToggleNotifCount))
+        console.log("attempted to show duplicate toggle notif!! " + String(duplicateToggleNotifCount) + " waiting to be shown") 
+        setTimeout(function(){showNotif('toggle-notif', false, 2300); document.getElementById('toggle-set').innerHTML = "switched to <b>" + currentTheme + " theme</b>. " + crossSessionPersistence; duplicateToggleNotifCount -= 1;}, (3100*duplicateToggleNotifCount)+(100*duplicateToggleNotifCount))
     } else {
-        document.getElementById('toggle-set').innerHTML = "switched to <b>"+ themes[toggle] + " theme</b>. <div class=\"toast-subsection text-muted\" style=\"font-size:7.8pt\">this will persist across sessions.</div>"
+        document.getElementById('toggle-set').innerHTML = "switched to <b>"+ themes[toggle] + " theme</b>. " + crossSessionPersistence
         showNotif('toggle-notif', false, 2300)
     }
 }
@@ -49,9 +56,9 @@ function getCurrentTheme(){
     if (cookies['theme']){
         source = "cookie"
         console.log("cookie is set, setting theme to " + cookies['theme'])
-        return cookies['theme'] == "dark" //no cookie set? check system theme
+        return cookies['theme'] == "dark" //true == dark, false == light
     }
-    console.log("cookie not set!")
+    console.log("cookie not set!") //cookie not set? check system theme
     source = "system"
     try {
         return window.matchMedia("(prefers-color-scheme:dark)").matches;
@@ -63,14 +70,18 @@ function getCurrentTheme(){
 
 function applyLightStyling(){
     console.log("switching to light theme")
-    document.cookie = "theme=light"
+    if (cookies['accepted']){
+        document.cookie = "theme=light"
+    }
     document.body.style.color = "#36393f"; document.body.style.backgroundColor = "white"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-light', 'btn-outline-dark')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-light', 'link-dark')}; for (const each of document.getElementsByTagName('li')){if (each.className.includes("nav")){continue}; each.style.backgroundColor="white"; each.style.color="#36393f";}; for (const each of document.getElementsByTagName('ul')){if (each.className.includes("nav")){continue};each.style.backgroundColor="white"; each.style.color="#36393f";};if (document.getElementsByClassName("commit-link")){for (const link of document.getElementsByClassName("commit-link")){link.style.color = "#36393f"}}; for (const elem of document.getElementsByTagName("input")){elem.style.backgroundColor = "white"; elem.style.color = "#36393f";}for (const elem of document.getElementsByClassName("toast")){elem.style.color = "black"; elem.style.backgroundColor = "white";} for (const elem of document.getElementsByClassName('btn-close')){elem.className = elem.className.replace("btn-close-white", "")}
 }
 
 function applyDarkStyling(){
     console.log("switching to dark theme")
-    document.cookie = "theme=dark"
-    document.body.style.color = "white"; document.body.style.backgroundColor = "#36393f"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-dark', 'btn-outline-light')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-dark', 'link-light')}; for (const each of document.getElementsByTagName('li')){if (each.className.includes("nav")){continue}; each.style.backgroundColor="#36393f"; each.style.color="white";}; for (const each of document.getElementsByTagName('ul')){if (each.className.includes("nav")){continue};each.style.backgroundColor="#36393f"; each.style.color="white";}; if (document.getElementsByClassName("commit-link")){for (const link of document.getElementsByClassName("commit-link")){link.style.color = "white"}}for (const elem of document.getElementsByTagName("input")){elem.style.backgroundColor = "#36393f"; elem.style.color = "white";} for (const elem of document.getElementsByClassName("toast")){elem.style.color = "white"; elem.style.backgroundColor = "#36393f";} for (const elem of document.getElementsByClassName('btn-close')){if (! elem.className.includes("btn-close-white")){elem.className += " btn-close-white"}} for (const each of document.getElementsByClassName('modal')){each.style.color = "white"} for (const each of document.getElementsByClassName('modal-content')){each.style.backgroundColor="#36393f"}
+    if (cookies['accepted']){
+        document.cookie = "theme=dark"
+    }
+     document.body.style.color = "white"; document.body.style.backgroundColor = "#36393f"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-dark', 'btn-outline-light')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-dark', 'link-light')}; for (const each of document.getElementsByTagName('li')){if (each.className.includes("nav")){continue}; each.style.backgroundColor="#36393f"; each.style.color="white";}; for (const each of document.getElementsByTagName('ul')){if (each.className.includes("nav")){continue};each.style.backgroundColor="#36393f"; each.style.color="white";}; if (document.getElementsByClassName("commit-link")){for (const link of document.getElementsByClassName("commit-link")){link.style.color = "white"}}for (const elem of document.getElementsByTagName("input")){elem.style.backgroundColor = "#36393f"; elem.style.color = "white";} for (const elem of document.getElementsByClassName("toast")){elem.style.color = "white"; elem.style.backgroundColor = "#36393f";} for (const elem of document.getElementsByClassName('btn-close')){if (! elem.className.includes("btn-close-white")){elem.className += " btn-close-white"}} for (const each of document.getElementsByClassName('modal')){each.style.color = "white"} for (const each of document.getElementsByClassName('modal-content')){each.style.backgroundColor="#36393f"}
 }
 
 function addCloseButton(name){
@@ -211,6 +222,7 @@ function initTheming(show){
             applyDarkStyling();
             document.body.style.opacity = "1";
             if (show){
+                getCookies()
                 showThemeNotif("dark")
             }
         }
@@ -227,6 +239,7 @@ function initTheming(show){
             applyLightStyling();
             document.body.style.opacity = "1";
             if (show){
+                getCookies()
                 showThemeNotif("light");
             }
         }
@@ -234,6 +247,7 @@ function initTheming(show){
         themeToggle.title = "switch to dark theme.";
         themeToggle.style.marginBottom = "0";
     }
+    //apply theme transitions
     if (typeof toggle !== 'undefined'){
         document.body.style.transition = "background-color 0.6s ease-in-out, color 0.6s ease-in-out, transform 0.6s ease-in-out";
         for (const each of document.getElementsByTagName("li")){
