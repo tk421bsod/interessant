@@ -18,9 +18,10 @@ next, set up the database:
 - enter mysql shell (might need to run this as root)
 - 'create database interessant;'
 - 'create user 'interessantapp'@'localhost';'
+- 'use interessant;'
 - 'create table links(url text, hash varchar(11) primary key);'
 - 'grant all on interessant.* to 'interessantapp'@'localhost';'
 - 'flush privileges;'
 
 finally, run api.py.
-if you see an error message like 'Unable to bind to port', either run as root or change the port. 
+if you see an error message like 'Unable to bind to port', either run as root or change the port. (located in web.run_app() on the last line of api.py) 
