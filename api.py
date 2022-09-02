@@ -35,11 +35,8 @@ def fill_cache():
 async def compute_hash():
     a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
     n = ['1', '2', '3', '4', '5', '6', '7', '8', '0']
-    hash = random.choice(n)
-    for each in range(1, 8):
+    for each in range(1, 9):
         hash += random.choice([random.choice(a), random.choice(n)])
-    hash += str(int(hash[0])+1)
-    print(hash)
     return hash
 
 @routes.get('/deps/bootstrap.bundle.min.js')
@@ -89,12 +86,7 @@ async def check_link(request):
         return return_document(hash, 'text/html')
     if request.path in ['/deps/theming.js', '/deps/fa/solid.js', '/deps/fa/fontawesome.min.js', '/deps/fa/regular.js']:
         return return_document(f".{request.path}", 'script/javascript')
-    print(hash)
     try:
-        #checksum to avoid hitting cache
-        if int(hash[-1]) - int(hash[0]) != 1:
-            raise ValueError
-        print(links[hash])
         return web.HTTPFound(links[hash])
     except KeyError:
         ret = dbapi.exec_safe_query("select url from links where hash=%s", (hash))
@@ -103,9 +95,8 @@ async def check_link(request):
             if ret['url']:
                 return web.HTTPFound(ret['url'])
         return return_document('invalid.html', 'text/html')
-    except ValueError:
+    except:
         return return_document('invalid.html', 'text/html')
-
 async def handle_errors(request):
     return return_document('error.html', 'text/html')
 
