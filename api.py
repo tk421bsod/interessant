@@ -79,7 +79,7 @@ async def check_link(request):
     hash = request.path.replace('/', '')
     if hash in ['index.html', 'invalid.html', 'error.html']:
         return return_document(hash, 'text/html')
-    if request.path in ['/deps/theming.js', '/deps/fa/solid.js', '/deps/fa/fontawesome.min.js', '/deps/fa/regular.js', '/deps/bootstrap.bundle.min.js']:
+    if request.path in ['/deps/vif/main.js', '/deps/fa/solid.js', '/deps/fa/fontawesome.min.js', '/deps/fa/regular.js', '/deps/bootstrap.bundle.min.js']:
         return return_document(f".{request.path}", 'script/javascript')
     try:
         return web.HTTPFound(links[hash])

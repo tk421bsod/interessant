@@ -14,6 +14,11 @@ first, install:
 the `aiohttp-compress` Python module is optional, but highly recommended as it adds support for gzip compression.
 this can reduce file sizes by as much as 84% (bootstrap.min.css benefits the most from this) at the cost of increased cpu usage.
 
+then, set up `vif` (for theming):
+- 'cd deps'
+- 'git submodule init'
+- 'git submodule update'
+
 next, set up the database:
 - enter mysql shell (might need to run this as root)
 - 'create database interessant;'

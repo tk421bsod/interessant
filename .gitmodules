@@ -1,0 +1,3 @@
+[submodule "deps/vif"]
+	path = deps/vif
+	url = git@github.com:tk421bsod/vif.git
