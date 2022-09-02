@@ -15,7 +15,7 @@ except:
     if not "--allownodb" in sys.argv:
         print("Failed to set up database. Pass '--allownodb' to continue without a database connection.")
         os._exit(12)
-    print("'--allownodb' passed, continuing without a database connection. Most stuff won't work.")
+    print("'--allownodb' passed, continuing without a database connection.")
 routes = web.RouteTableDef()
 links = {}
 hashes = {}
@@ -39,21 +39,15 @@ async def compute_hash():
         hash += random.choice([random.choice(a), random.choice(n)])
     return hash
 
-@routes.get('/deps/bootstrap.bundle.min.js')
-async def js(request):
-    return return_document('./deps/bootstrap.bundle.min.js', 'text/javascript')
-
 @routes.get('/shorten')
 async def shorten(request):
     global hashes
     print("Request recieved")
     url = request.rel_url.query.get('url', '').strip()
-    print(url)
-    print(list(links.keys()))
-    print(hashes)
     if not url.startswith("http"):
         url = "http://"+url
     try:
+        #url already shortened?? just return the existing hash for it
         if url in list(links.values()):
             return web.HTTPFound(f'/?hash={hashes[url]}')
     except KeyError:
@@ -84,7 +78,7 @@ async def check_link(request):
     hash = request.path.replace('/', '')
     if hash in ['index.html', 'invalid.html', 'error.html']:
         return return_document(hash, 'text/html')
-    if request.path in ['/deps/theming.js', '/deps/fa/solid.js', '/deps/fa/fontawesome.min.js', '/deps/fa/regular.js']:
+    if request.path in ['/deps/theming.js', '/deps/fa/solid.js', '/deps/fa/fontawesome.min.js', '/deps/fa/regular.js', '/deps/bootstrap.bundle.min.js']:
         return return_document(f".{request.path}", 'script/javascript')
     try:
         return web.HTTPFound(links[hash])
@@ -97,6 +91,7 @@ async def check_link(request):
         return return_document('invalid.html', 'text/html')
     except:
         return return_document('invalid.html', 'text/html')
+    
 async def handle_errors(request):
     return return_document('error.html', 'text/html')
 
