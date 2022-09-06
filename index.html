@@ -16,6 +16,10 @@
         <script src="./deps/fa/regular.js"></script>
         <script src="./deps/fa/fontawesome.min.js"></script>
         <style>
+            *{
+                transition: none /* just a catch-all to prevent transition between themes on page load. vif adds transitions for color and bg color on initTheming after applyLightStyling. */
+            }           
+
             body{
                 background-color: white;   
                 color:#36393f;
@@ -80,7 +84,7 @@
          <div class="d-flex" id="theme-notif-main" style="">
              <div class="toast-body" id="theme-set" style="">
                   <div class="toast-subsection text-muted" style="font-size:8pt">
-                     use the button at the bottom to change the theme later.
+                     Use the button at the bottom to change the theme later.
                  </div>
              </div>
              <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" style="padding-right: 0; transition: opacity 0.5s ease, transform 0.5s ease; transform: scale(0.01, 0.01); left: 420px; top:35%; position:absolute;" id="theme-notif-close"></button>
@@ -211,7 +215,7 @@
                 cookieModal.show()
                 return
             }
-            initSecondary()
+            initSecondary() 
             initTheming(!redirect)
         }
 
