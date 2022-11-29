@@ -8,21 +8,15 @@ import logging
 import random
 import traceback
 import sys
+
 logging.basicConfig(level=logging.INFO)
-try:
-    dbapi = db.db(password="", ip="localhost", database="interessant")
-except:
-    if not "--allownodb" in sys.argv:
-        print("Failed to set up database. Pass '--allownodb' to continue without a database connection.")
-        os._exit(12)
-    print("'--allownodb' passed, continuing without a database connection.")
+dbapi = db.db(password="", ip="localhost", database="interessant")
 routes = web.RouteTableDef()
 links = {}
 hashes = {}
 
 def fill_cache():
-    global hashes
-    data = dbapi.exec_safe_query("select * from links", (), fetchall=True)
+    data = dbapi.exec_safe_query("select * from links", ())
     if isinstance(data, dict):
         data = [data]
     if not data:
@@ -126,6 +120,5 @@ try:
 except ImportError:
     print("aiohttp-compress isn't installed. Compression disabled.")
 setup_middlewares(app)
-if not "--allownodb" in sys.argv:
-    fill_cache()
+fill_cache()
 web.run_app(app, port=80, access_log=None)
