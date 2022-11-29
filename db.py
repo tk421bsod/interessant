@@ -6,37 +6,13 @@ import inspect
 import pymysql
 
 class db:
-    """
-    Methods used for interaction with the database.
-
-    This class provides no public attributes.
-
-    Methods
-    -------
-
-    ensure_tables() - Ensures that all required tables exist.
-    exec_safe_query(query, params, *,  fetchall) - Executes 'query' with 'params'. Uses pymysql's parameterized queries. 'params' can be empty.
-    exec_query(query, *, fetchall) - Executes 'query'. DEPRECATED due to the potential for SQL injection. Will show a warning if used.
-    """
-
     def __init__(self, password, ip, database):
-        """
-        Parameters
-        ----------
-        password : str, optional
-            The database password in plain text.
-        ip : str, optional
-            The IP address to use for the database.
-        database : str, optional
-            The name of the database to connect to.
-        """
         self.databasepassword = password
         if not ip:
             ip = "localhost"
         self.ip = ip
         self.database = database
         self.logger = logging.getLogger(name=f'db')
-        #try to open a connection to the database
         self.conn = self.attempt_connection()
         self.logger.info("Connected to database.")
 
@@ -68,19 +44,6 @@ class db:
                     cursorclass=pymysql.cursors.DictCursor,
                     autocommit=True).cursor()
         return conn
-
-    #maybe make this an alias to exec_safe_query or rename exec_safe query to this?
-    @requires_connection
-    def exec_query(self, querytoexecute, debug=False, fetchall=False):
-        self.connect(self.database)
-        previous_frame = inspect.getframeinfo(inspect.currentframe().f_back)
-        self.logger.error(f"db.exec_query was called! Consider using exec_safe_query instead. Called in file '{previous_frame[0]}' at line {previous_frame[1]} in function {previous_frame[2]}")
-        self.conn.execute(str(querytoexecute))
-        if fetchall:
-            row = self.conn.fetchall()
-        else:
-            row = self.conn.fetchone()
-        return row if row != () and row != "()" else None
 
     @requires_connection
     def exec_safe_query(self, query, params, *, debug=False, fetchall=False):
