@@ -46,7 +46,7 @@ class db:
         return conn
 
     @requires_connection
-    def exec_safe_query(self, query, params, *, debug=False, fetchall=False):
+    def exec_safe_query(self, query, params):
         """Executes 'query' with 'params'. Uses pymysql's parameterized queries.
 
         Parameters
