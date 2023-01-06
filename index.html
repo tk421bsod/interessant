@@ -219,9 +219,19 @@
             initTheming(!redirect)
         }
 
+        function fallbackCopy(field){
+            field.focus();
+            field.select();
+            document.execCommand('copy');
+        }
+            
         function click_to_copy(){
             text = document.getElementById('newlink')
-            navigator.clipboard.writeText(text.value);
+            if (navigator.clipboard) { // If normal copy method available, use it
+              navigator.clipboard.writeText(text.value);
+            } else { // Otherwise fallback to the above function
+              fallbackCopy(text);
+            }
             text.style.transition = "border 1s ease, box-shadow 1s ease";
             text.style.border = "2px dashed #198754";
             document.getElementById('copy').className = "mt-0 text-success";
