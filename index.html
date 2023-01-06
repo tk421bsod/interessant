@@ -241,6 +241,7 @@
                 document.getElementById('copy').innerHTML = "<i class=\"far fa-copy fa-xs\"></i> copy failed. try manually copying the link."
                 document.getElementById('copy').focus();
                 return;
+            }
             text.style.transition = "border 1s ease, box-shadow 1s ease";
             text.style.border = "2px dashed #198754";
             document.getElementById('copy').className = "mt-0 text-success";
