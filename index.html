@@ -223,15 +223,24 @@
             field.focus();
             field.select();
             document.execCommand('copy');
+            setTimeout(function() { field.selectionStart = field.selectionEnd; }, 1); //deselect everything
+            field.blur(); //remove focus
         }
             
         function click_to_copy(){
             text = document.getElementById('newlink')
-            if (navigator.clipboard) { // If normal copy method available, use it
-              navigator.clipboard.writeText(text.value);
-            } else { // Otherwise fallback to the above function
-              fallbackCopy(text);
-            }
+            try {
+                if (navigator.clipboard) { // If normal copy method available, use it
+                    navigator.clipboard.writeText(text.value);
+                } else { // Otherwise fallback to the above function
+                    fallbackCopy(text);
+                }
+            } catch(err) {
+               console.error("Unable to copy to clipboard", err)
+                document.getElementById('copy').className = "mt-0 text-warning";
+                document.getElementById('copy').innerHTML = "<i class=\"far fa-copy fa-xs\"></i> copy failed. try manually copying the link."
+                document.getElementById('copy').focus();
+                return;
             text.style.transition = "border 1s ease, box-shadow 1s ease";
             text.style.border = "2px dashed #198754";
             document.getElementById('copy').className = "mt-0 text-success";
