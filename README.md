@@ -30,3 +30,9 @@ next, set up the database:
 
 finally, run api.py.
 if you see an error message like 'Unable to bind to port', either run as root or change the port. (located in web.run_app() on the last line of api.py) 
+
+# the stack
+vif (custom theming utility)
+mysql (`db.py` abstraction layer taken from Maximilian)
+bootstrap
+aiohttp
