@@ -69,7 +69,7 @@
             <h1 id="header" class="mt-5">intéressant.</h1>
             <h5 class="text-muted">yet another link shortener.</h5>
             <br>
-            <form method="get" action="./shorten" id="main-form" onsubmit="event.preventDefault(); return checkAndSubmit()">
+            <form method="get" action="/shorten" id="main-form" onsubmit="event.preventDefault(); return checkAndSubmit()">
                 <div>
                     <label class="form-label">enter a link:</label>
                     <input type="text" id="link-field" name="url" style="width:20vw" class="form-control mx-auto mb-1">
@@ -175,7 +175,7 @@
                 if (hash == 'e' || hash == 'd'){
                     document.getElementById('saved').innerHTML = "hmm, something went wrong while shortening that link. try again later.";
                 }
-                document.getElementById('saved').innerHTML = "new link: <input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + window.location.href.split('?')[0] + hash + "\">";
+                document.getElementById('saved').innerHTML = "new link: <input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + window.location.href.split('?')[0] + "/" + hash + "\">";
                 //automatically adjust width to match length of link
                 adjustWidth('newlink', 7.7)
                 if (window.innerWidth < 768){
