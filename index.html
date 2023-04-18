@@ -184,7 +184,7 @@
             addEventListener('input', adjustInputWidth);
             if (hash){
                 if (info){
-                    document.getElementById('saved').innerHTML = "The link<br><code>" + window.location.href.split('?')[0] + "/" + hash + "/</code><br>points to<br><input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + info + "\">";
+                    document.getElementById('saved').innerHTML = "The link<br><code style=\"color:inherit\">" + window.location.href.split('?')[0] + "/" + hash + "/</code><br>points to<br><input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + info + "\">";
                 } else {
                     if (hash == 'e' || hash == 'd'){
                         document.getElementById('saved').innerHTML = "hmm, something went wrong while shortening that link. try again later.";
