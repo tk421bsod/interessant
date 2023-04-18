@@ -153,7 +153,8 @@
         function adjustWidth(elem, multiplier){
             let newwidth = document.getElementById(elem).value.length*multiplier;
             console.log("attempting to fit " + elem + " to text size (new width is " + String(newwidth) + ")")
-            if (newwidth > (window.innerWidth**0.95) && window.innerWidth > 768) {
+            if (newwidth > (window.innerWidth**0.95)) {
+                document.getElementById(elem).style.width = ""+window.innerWidth**0.95+"";
                 console.log("not changing width as it exceeds vw**0.95 (" + String(window.innerWidth**0.95) + ")")
                 return
             }
@@ -175,12 +176,17 @@
 
         function initSecondary(){
             hash = getUrlParam('hash', '');
+            info = getUrlParam('info', '');
             addEventListener('input', adjustInputWidth);
             if (hash){
-                if (hash == 'e' || hash == 'd'){
-                    document.getElementById('saved').innerHTML = "hmm, something went wrong while shortening that link. try again later.";
+                if (info){
+                    document.getElementById('saved').innerHTML = "The link<br><code style=\"color:white\">" + window.location.href.split('?')[0] + "/" + hash + "/</code><br>points to<br><input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + info + "\">";
+                } else {
+                    if (hash == 'e' || hash == 'd'){
+                        document.getElementById('saved').innerHTML = "hmm, something went wrong while shortening that link. try again later.";
+                    }
+                    document.getElementById('saved').innerHTML = "new link: <input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + window.location.href.split('?')[0] + "/" + hash + "\">";
                 }
-                document.getElementById('saved').innerHTML = "new link: <input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + window.location.href.split('?')[0] + "/" + hash + "\">";
                 //automatically adjust width to match length of link
                 adjustWidth('newlink', 7.7)
                 if ((window.innerWidth < 768) && (hasTouchscreen())){
