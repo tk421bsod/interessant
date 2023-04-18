@@ -55,12 +55,16 @@
 
             #newlink{
                 width:17vw; 
-                text-align:center; 
-                box-shadow: none; 
-                transition: box-shadow 0.1s ease;
             }
-            #newlink:hover{
-                box-shadow: 0px 0px 7px 0px #B0B2B2;
+
+            input{
+                text-align:center;
+                box-shadow: none !important;
+                transition: box-shadow 0.45s ease !important;
+            }
+
+            input:hover{
+                box-shadow: 0px 0px 7px 0px #3498db !important;
             }
         </style>
     </head>
@@ -180,7 +184,7 @@
             addEventListener('input', adjustInputWidth);
             if (hash){
                 if (info){
-                    document.getElementById('saved').innerHTML = "The link<br><code style=\"color:white\">" + window.location.href.split('?')[0] + "/" + hash + "/</code><br>points to<br><input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + info + "\">";
+                    document.getElementById('saved').innerHTML = "The link<br><code>" + window.location.href.split('?')[0] + "/" + hash + "/</code><br>points to<br><input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + info + "\">";
                 } else {
                     if (hash == 'e' || hash == 'd'){
                         document.getElementById('saved').innerHTML = "hmm, something went wrong while shortening that link. try again later.";
@@ -188,7 +192,7 @@
                     document.getElementById('saved').innerHTML = "new link: <input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + window.location.href.split('?')[0] + "/" + hash + "\">";
                 }
                 //automatically adjust width to match length of link
-                adjustWidth('newlink', 7.7)
+                adjustWidth('newlink', 9.1)
                 if ((window.innerWidth < 768) && (hasTouchscreen())){
                     document.getElementById('copy').innerHTML = "<i class=\"far fa-copy fa-xs\"></i> tap above to copy"
                 } else {
@@ -254,8 +258,9 @@
                 return;
             }
             text.style.transition = "border 1s ease, box-shadow 1s ease";
-            text.style.border = "2px dashed #198754";
-            document.getElementById('copy').className = "mt-0 text-success";
+            text.style.border = "2px dashed #3498db";
+            document.getElementById('copy').className = "mt-0";
+            document.getElementById('copy').style.color = "#3498db"
             document.getElementById('copy').innerHTML = "<i class=\"far fa-paste fa-xs\"></i> copied link to clipboard!";
             text.blur();
             document.getElementById('copy').focus();
