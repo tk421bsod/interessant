@@ -157,6 +157,7 @@
                 console.log("not changing width as it exceeds vw**0.95 (" + String(window.innerWidth**0.95) + ")")
                 return
             }
+            //TODO: get rid of arbitrary values like these
             if ((newwidth < ((window.innerWidth/100)*19.1) && window.innerWidth > 768) || (window.innerWidth < 768 && newwidth < (window.innerWidth/100)*17.45)) {
                 document.getElementById(elem).style.width = "20vw"
             } else if (newwidth < window.innerWidth){
@@ -166,6 +167,10 @@
 
         function adjustInputWidth(){
             adjustWidth('link-field', 9.4)
+        }
+
+        function hasTouchscreen(){
+            return (('ontouchstart' in window)||(navigator.maxTouchPoints>0)||(navigator.msMaxTouchPoints>0));
         }
 
         function initSecondary(){
@@ -178,7 +183,7 @@
                 document.getElementById('saved').innerHTML = "new link: <input id=\"newlink\"type=\"text\" readonly onclick=\"click_to_copy()\" value=\"" + window.location.href.split('?')[0] + "/" + hash + "\">";
                 //automatically adjust width to match length of link
                 adjustWidth('newlink', 7.7)
-                if (window.innerWidth < 768){
+                if ((window.innerWidth < 768) && (hasTouchscreen())){
                     document.getElementById('copy').innerHTML = "<i class=\"far fa-copy fa-xs\"></i> tap above to copy"
                 } else {
                     document.getElementById('copy').innerHTML = "<i class=\"far fa-copy fa-xs\"></i> click above to copy"
@@ -221,7 +226,7 @@
 
         function fallbackCopy(field){
             field.focus();
-            field.select();
+            field.select(); //select the input field
             document.execCommand('copy');
             setTimeout(function() { field.selectionStart = field.selectionEnd; }, 1); //deselect everything
             field.blur(); //remove focus
@@ -232,11 +237,11 @@
             try {
                 if (navigator.clipboard) { // If normal copy method available, use it
                     navigator.clipboard.writeText(text.value);
-                } else { // Otherwise fallback to the above function
+                } else { // Otherwise try a fallback
                     fallbackCopy(text);
                 }
             } catch(err) {
-               console.error("Unable to copy to clipboard", err)
+                console.error("Unable to copy to clipboard", err)
                 document.getElementById('copy').className = "mt-0 text-warning";
                 document.getElementById('copy').innerHTML = "<i class=\"far fa-copy fa-xs\"></i> copy failed. try manually copying the link."
                 document.getElementById('copy').focus();
