@@ -3,20 +3,20 @@ from aiohttp import web
 import datetime
 import pymysql
 import os
-import db
+from db_utils import db
 import logging
 import random
 import traceback
 import sys
 
 logging.basicConfig(level=logging.INFO)
-dbapi = db.db(password="", ip="localhost", database="interessant")
+dbapi = db.db(user="interessantapp", password="", ip="localhost", database="interessant")
 routes = web.RouteTableDef()
 links = {}
 hashes = {}
 
 def fill_cache():
-    data = dbapi.exec_safe_query("select * from links", ())
+    data = dbapi.exec("select * from links", ())
     if isinstance(data, dict):
         data = [data]
     if not data:
@@ -49,7 +49,7 @@ async def shorten(request):
         print("keyerror - see output above")
     hash = await compute_hash()
     try:
-        dbapi.exec_safe_query("insert into links(url, hash) values(%s, %s)", (url, hash))
+        dbapi.exec("insert into links(url, hash) values(%s, %s)", (url, hash))
         links[hash] = url
         hashes[url] = hash
     except pymysql.err.IntegrityError:
@@ -78,7 +78,7 @@ async def check_link(request):
     try:
         return web.HTTPFound(links[hash])
     except KeyError:
-        ret = dbapi.exec_safe_query("select url from links where hash=%s", (hash))
+        ret = dbapi.exec("select url from links where hash=%s", (hash))
         if ret:
             #have to nest to prevent keyerrors
             if ret['url']:
