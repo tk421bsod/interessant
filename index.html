@@ -224,7 +224,7 @@
             getCookies();
             var cookieModalElem = document.getElementById('cookieModal')
             var cookieModal = new bootstrap.Modal(cookieModalElem)
-            if (! cookies['accepted'] && ! isRedirect()){
+            if (! cookies['accepted']){
                 initTheming(false); //defer themeNotif until modal is hidden
                 cookieModalElem.addEventListener('shown.bs.modal', function (event) {
                     return setTimeout(initSecondary, 500) //finish init in a moment...
