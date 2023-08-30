@@ -159,7 +159,7 @@
         function adjustWidth(elem, multiplier){
             let newwidth = document.getElementById(elem).value.length*multiplier;
             console.log("attempting to fit " + elem + " to text size (new width is " + String(newwidth) + ")")
-            if (newwidth > (window.innerWidth**0.95)) {
+            if (newwidth > (window.innerWidth**0.99)) {
                 document.getElementById(elem).style.width = ""+window.innerWidth**0.95+"";
                 console.log("not changing width as it exceeds vw**0.95 (" + String(window.innerWidth**0.95) + ")")
                 return
